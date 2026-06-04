@@ -1,27 +1,27 @@
-# Vercel + Supabase Deployment Guide
+# Vercel + Neon Deployment Guide
 
-## Step 1: Create Supabase Project
+## Step 1: Create Neon Project
 
-1. Go to https://supabase.com
+1. Go to https://neon.tech
 2. Sign up or log in
-3. Click "New Project"
+3. Click "Create project"
 4. Fill in:
    - Project name: e.g., `tala-baptismal-rsvp`
-   - Database password: create a strong password
-   - Region: choose closest to you
-5. Wait for the project to be created (5-10 min)
-6. Go to "Settings" → "Database"
-7. Copy the **Connection String** (under PostgreSQL)
-   - Format: `postgresql://postgres.[project-id]:PASSWORD@aws-0-region.pooler.supabase.com:6543/postgres?schema=public`
-   - Replace `PASSWORD` with the actual password you created
+   - Region: choose the closest region
+   - Plan: Free tier is fine for RSVP data
+5. Wait for the project to finish creating
+6. Open the Neon dashboard and navigate to your new database
+7. Find the connection information section and copy the PostgreSQL connection string
+   - Example format: `postgresql://username:PASSWORD@branch.region.neon.tech:5432/neondb?sslmode=require`
+   - Replace `username`, `PASSWORD`, `branch`, `region`, and `neondb` with your actual values
 
 ## Step 2: Update Local .env
 
 1. Create or update `.env` in the project root:
    ```
-   DATABASE_URL="postgresql://postgres.[project-id]:PASSWORD@aws-0-region.pooler.supabase.com:6543/postgres?schema=public"
+   DATABASE_URL="postgresql://username:PASSWORD@branch.region.neon.tech:5432/neondb?sslmode=require"
    ```
-2. Replace the placeholders with your actual connection string
+2. Replace the placeholders with your actual Neon connection string
 
 ## Step 3: Create & Run Migration
 
@@ -30,14 +30,14 @@ npx prisma migrate dev --name init
 ```
 
 This will:
-- Create the database schema in Supabase
+- Create the database schema in Neon
 - Create Rsvp, User, and Post tables
 
 ## Step 4: Push to GitHub
 
 ```bash
 git add .
-git commit -m "Setup PostgreSQL and create migration"
+git commit -m "Setup Neon PostgreSQL and create migration"
 git push origin main
 ```
 
@@ -50,7 +50,7 @@ git push origin main
 5. Select the `BaptismalRSVP` repository
 6. Under "Environment Variables", add:
    - **Key:** `DATABASE_URL`
-   - **Value:** (paste the Supabase connection string from Step 1)
+   - **Value:** (paste the Neon connection string from Step 1)
 7. Click "Deploy"
 
 Vercel will automatically:
@@ -70,11 +70,11 @@ Vercel will automatically:
 If the deployment fails:
 - Check the Vercel deployment log for errors
 - Verify the `DATABASE_URL` is correct in Vercel settings
-- Ensure Supabase project is active (not paused)
+- Ensure the Neon database is active
 - Check Prisma migration status: `npx prisma migrate status`
 
 ## Notes
 
-- Supabase free tier includes 500MB storage (more than enough for guest RSVPs)
-- Keep your Supabase password safe; never commit it to GitHub
+- Neon free tier includes managed PostgreSQL hosting and works well for RSVP data
+- Keep your Neon password and connection string safe; never commit them to GitHub
 - The migration file will be created in `prisma/migrations/` and checked into Git
